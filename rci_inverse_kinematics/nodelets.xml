@@ -1,0 +1,9 @@
+<library path="lib/libinverse_kinematics_nodelet">
+    <class name="rci_inverse_kinematics/inverse_kinematics_nodelet"
+           type="rci_inverse_kinematics::InverseKinematicsNodelet"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            Nodelet for inverse kinematics caluclations of the robot arm.
+        </description>
+    </class>
+</library>

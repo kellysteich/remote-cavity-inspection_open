@@ -1,0 +1,13 @@
+
+---
+bool use_passthrough
+bool use_voxelgrid
+bool use_radial
+
+float64 passthrough_min
+float64 passthrough_max
+
+float64 voxelgrid_leafsize
+
+int64 radial_min_neighbors
+float64 radial_radius_search

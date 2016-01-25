@@ -1,0 +1,11 @@
+float64 qx
+float64 qy
+float64 qz
+float64 rx
+float64 ry
+float64 rz
+bool fixed_q
+
+---
+
+bool result

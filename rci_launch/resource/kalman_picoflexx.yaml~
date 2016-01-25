@@ -1,0 +1,4 @@
+# kalman parameters
+q: {x: 0.0, y: 0.0, z: 0.0}
+r: {x: 0.1, y: 0.1, z: 0.1}
+camera_translation: {x: 0.1524, y: 0.0, z: -0.07}

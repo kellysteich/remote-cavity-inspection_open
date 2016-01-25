@@ -1,0 +1,4 @@
+geometry_msgs/Point seedpoint_tree
+geometry_msgs/Point seedpoint_cavity
+---
+bool result

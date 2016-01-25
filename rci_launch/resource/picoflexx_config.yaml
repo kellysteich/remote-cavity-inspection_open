@@ -1,0 +1,13 @@
+# mode 0:   MODE_9_5FPS_2000
+# mode 1:   MODE_9_10FPS_1000
+# mode 2:   MODE_9_15FPS_700
+# mode 3:   MODE_9_25FPS_450
+# mode 4:   MODE_5_35FPS_600
+# mode 5:   MODE_5_45FPS_500
+cam0:
+    camera_id: 0005-1203-0034-1816
+    exposure_time: 2000
+    auto_exposure_time: false
+    topic_name: pcl
+    topic_depth: depth/image_raw
+    operation_mode: MODE_5_35FPS_600

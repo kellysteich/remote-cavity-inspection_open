@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find rotors_description)/urdf/component_snippets.xacro" />
+
+  <!-- Macro to add a RealsenseR200-sensor camera. -->
+  <xacro:macro name="realsenseR200_sensor_camera_macro"
+    params="namespace parent_link camera_suffix frame_rate *origin">
+    <xacro:camera_macro
+      namespace="${namespace}"
+      parent_link="${parent_link}"
+      camera_suffix="${camera_suffix}"
+      frame_rate="${frame_rate}"
+      horizontal_fov="0.9465331087479020"
+      image_width="640"
+      image_height="480"
+      image_format="R8G8B8"
+      min_distance="0.01"
+      max_distance="30"
+      noise_mean="0.0"
+      noise_stddev="0.007"
+      enable_visual="true">
+      <mesh filename="package://rci_simulator/models/camera.dae" scale="0.0005 0.0005 0.0007" />
+      <xacro:insert_block name="origin" />
+    </xacro:camera_macro>
+  </xacro:macro>
+
+  <!-- Macro to add a depth camera on the RealsenseR200-sensor. -->
+  <xacro:macro name="realsenseR200_sensor_depth_macro"
+    params="namespace parent_link camera_suffix frame_rate max_range *origin">
+    <link name="${namespace}/camera_${camera_suffix}_link">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <cylinder length="0.001" radius="0.007" />
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1e-5" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+    </link>
+    <joint name="${namespace}/camera_${camera_suffix}_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent_link}" />
+      <child link="${namespace}/camera_${camera_suffix}_link" />
+      <limit upper="0" lower="0" effort="0" velocity="0" />
+    </joint>
+    <!-- Optical center of camera -->
+    <link name="${namespace}/camera_${camera_suffix}_optical_center_link" />
+    <joint name="${namespace}/camera_${camera_suffix}_optical_center_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}" />
+      <parent link="${namespace}/camera_${camera_suffix}_link" />
+      <child link="${namespace}/camera_${camera_suffix}_optical_center_link" />
+      <limit upper="0" lower="0" effort="0" velocity="0" />
+    </joint>
+    <gazebo reference="${namespace}/camera_${camera_suffix}_link">
+      <sensor type="depth" name="${namespace}_camera_{camera_suffix}">
+        <always_on>true</always_on>
+        <update_rate>${frame_rate}</update_rate>
+        <camera>
+          <horizontal_fov>0.9800183449142024</horizontal_fov>
+          <image>
+            <format>L8</format>
+            <width>480</width>
+            <height>360</height>
+          </image>
+          <clip>
+            <near>0.7</near>
+            <far>4.0</far>
+          </clip>
+        </camera>
+        <plugin name="${namespace}_camera_{camera_suffix}" filename="libgazebo_ros_openni_kinect.so">
+          <robotNamespace>${namespace}</robotNamespace>
+          <alwaysOn>true</alwaysOn>
+          <baseline>0.11</baseline>
+          <updateRate>${frame_rate}</updateRate>
+          <cameraName>camera_${camera_suffix}</cameraName>
+          <imageTopicName>camera/image_raw</imageTopicName>
+          <cameraInfoTopicName>camera/camera_info</cameraInfoTopicName>
+          <depthImageTopicName>depth/disparity</depthImageTopicName>
+          <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+          <pointCloudTopicName>depth/points</pointCloudTopicName>
+          <frameName>camera_${camera_suffix}_optical_center_link</frameName>
+          <pointCloudCutoff>0.7</pointCloudCutoff>
+          <pointCloudCutoffMax>4.0</pointCloudCutoffMax>
+          <distortionK1>0.0</distortionK1>
+          <distortionK2>0.0</distortionK2>
+          <distortionK3>0.0</distortionK3>
+          <distortionT1>0.0</distortionT1>
+          <distortionT2>0.0</distortionT2>
+    	  <Cx>239.49998474121094</Cx>
+          <Cy>178.77978515625</Cy>
+          <focalLength>449.9438171386719</focalLength>
+        </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+
+  <!-- RealsenseR200-Sensor Macro -->
+  <xacro:macro name="realsenseR200_sensor_macro" params="namespace parent_link enable_cameras enable_depth *origin">
+    <!-- realsenseR200 Sensor Link -->
+    <link name="${namespace}/realsenseR200_sensor_link">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.005 0.13 0.015" />
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+          <box size="0.005 0.13 0.015" />
+        </geometry>
+      </visual>
+
+      <inertial>
+        <mass value="1e-5" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+      </inertial>
+    </link>
+    <joint name="${namespace}_realsenseR200_sensor_joint" type="fixed">
+      <xacro:insert_block name="origin" />
+      <parent link="${parent_link}" />
+      <child link="${namespace}/realsenseR200_sensor_link" />
+    </joint>
+
+    <!-- Camera -->
+    <xacro:if value="${enable_cameras}">
+      <!-- Insert camera. -->
+      <xacro:realsenseR200_sensor_camera_macro
+        namespace="${namespace}" parent_link="${namespace}/realsenseR200_sensor_link"
+        camera_suffix="rgb" frame_rate="30.0">
+        <origin xyz="0.0051 0 0" rpy="0 0 0" />
+      </xacro:realsenseR200_sensor_camera_macro>
+    </xacro:if>
+
+    <!-- Depth Sensor -->
+    <xacro:if value="${enable_depth}">
+      <xacro:realsenseR200_sensor_depth_macro
+        namespace="${namespace}" parent_link="${namespace}/realsenseR200_sensor_link"
+        camera_suffix="depth" frame_rate="30.0" max_range="4.0">
+        <origin xyz="0.0051 0 0" rpy="0 0 0" />
+      </xacro:realsenseR200_sensor_depth_macro>
+    </xacro:if>
+
+  </xacro:macro>
+
+</robot>

@@ -1,0 +1,9 @@
+<library path="lib/libfilter_pipeline_nodelet">
+    <class name="rci_filter_pipeline/filter_pipeline_nodelet"
+           type="rci_filter_pipeline::FilterPipelineNodelet"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            Filter pipeline Nodelet.
+        </description>
+    </class>
+</library>

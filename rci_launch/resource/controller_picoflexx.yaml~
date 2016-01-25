@@ -1,0 +1,20 @@
+# controller parameters
+desired_pitching_angle: 0.0
+robot_dist_to_tree: 0.5
+cavity_depth: 0.05
+tolerance: {arm_pitching: 0.01, robot_position: 0.03, robot_orientation: 0.001}
+update_rate: 100
+arm_translation: {x: 0.0, y: 0.0, z: -0.12}
+robot_offset: {x: -0.06, y: 0.0, z: 0.0}
+
+#l1: 0.24
+#l3: 0.35
+#l5: 0.14
+#l6: 0.12
+#alpha: 2.617993878 #pi minus the angle in the delta_manipulator xacro file
+
+l1: 0.24
+l3: 0.40
+l5: 0.10
+l6: 0.10
+alpha: 2.617993878

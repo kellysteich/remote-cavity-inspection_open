@@ -1,0 +1,48 @@
+# sensor parameters
+sensor/name: picoflexx
+sensor/depth: {max: 3, scale: 0.0002}
+sensor/translation: {x: 0.1224, y: 0.0, z: -0.052} # with regard to the robot frame
+sensor/rotation: {r: 0.0, p: 0.1, y: 0.0} # with regard to the robot frame
+
+# robot arm parameters
+arm/translation: {x: 0.0, y: 0.0, z: -0.1}
+arm/link_lengths: {l1: 0.24, l3: 0.35, l5: 0.14, l6: 0.12, alpha: 2.617993878}
+
+# filter pipeline parameters
+filter_pipeline/passthrough: {min: 0.3, max: 2.5, used: true}
+filter_pipeline/voxelgrid: {leafsize: 0.004, used: true}
+filter_pipeline/radial: {min_neighbors: 4, radius_search: 0.007, used: false}
+
+# img tree detection parameters
+img_tree_detection/debug: false
+img_tree_detection/min_depth: 0.15
+img_tree_detection/max_depth: 2.5
+img_tree_detection/tree: {thresh_seed: 0.05, thresh_depth: 0.05, max_scaling: 1.7}
+img_tree_detection/cavity: {min_width: 0.03, min_height: 0.03}
+img_tree_detection/kmeans: {k: 10, tol: 0.001, max_trys: 50}
+
+# box check parameters
+box_check/octree: {resolution: 0.001}
+box_check/start_box: {width: 0.005, height: 0.005, length: 0.04}
+box_check/initial_step: 0.01
+box_check/max_n_inliers: 4
+
+# cavity normal parameters
+cavity_normal/band_width: 0.01
+
+# kalman parameters
+kalman/q: {x: 0.0, y: 0.0, z: 0.0}
+kalman/r: {x: 0.01, y: 0.01, z: 0.01}
+
+# controller parameters
+controller/desired_pitching_angle: -0.1
+controller/robot_dist_to_tree: 0.53
+controller/cavity_depth: 0.05
+controller/tolerance: {arm_pitching: 0.01, robot_orientation: 0.01}
+controller/tolerance/robot_position: {x: 0.03, y: 0.02, z: 0.02}
+controller/filter_alpha: 0.03
+controller/update_rate: 100
+controller/robot_offset: {x: -0.09, y: 0.0, z: 0.02}
+
+# inverse kinematics parameters
+inverse_kinematics/n_semicircle: 100

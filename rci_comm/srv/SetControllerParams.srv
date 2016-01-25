@@ -1,0 +1,14 @@
+float64 desired_pitching_angle
+float64 robot_dist_to_tree
+float64 arm_pitching_tol
+float64 robot_position_tol_x
+float64 robot_position_tol_y
+float64 robot_position_tol_z
+float64 robot_orientation_tol
+float64 robot_offset_x
+float64 robot_offset_y
+float64 robot_offset_z
+
+---
+
+bool result

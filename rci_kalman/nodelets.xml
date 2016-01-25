@@ -1,0 +1,9 @@
+<library path="lib/libkalman_nodelet">
+    <class name="rci_kalman/kalman_nodelet"
+           type="rci_kalman::KalmanNodelet"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            Nodelet for kalman filter for the cavity position.
+        </description>
+    </class>
+</library>

@@ -1,0 +1,5 @@
+# box check parameters
+octree: {resolution: 0.001}
+start_box: {width: 0.005, height: 0.005, length: 0.03}
+initial_step: 0.01
+max_n_inliers: 4

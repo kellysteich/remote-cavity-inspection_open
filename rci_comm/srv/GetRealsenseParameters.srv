@@ -1,0 +1,6 @@
+
+---
+int64 sensor_depth_max
+float32 depth_scale
+float32 depth_fxinv
+float32 depth_fyinv

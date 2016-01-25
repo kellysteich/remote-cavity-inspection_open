@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<arg name="mav_name" default="firefly"/>
+<arg name="is_simulated" default="false" />
+
+<!--Simulation-->
+<arg name="sim_topic_robot_odometry" default="ground_truth/odometry" />
+<arg name="sim_topic_robot_odometry_gt" default="ground_truth/odometry" />
+<arg name="sim_topic_endeffector_pose" default="/gazebo/link_states" />
+<arg name="sim_topic_cavity_pose_gt" default="/gazebo/link_states" />
+
+<!--Real-->
+<arg name="real_topic_robot_odometry" default="msf_core/odometry" />
+<arg name="real_topic_robot_odometry_gt" default="msf_core/odometry" />
+<arg name="real_topic_endeffector_pose" default="/ethz_manipulator/vrpn_client/estimated_odometry" />
+<arg name="real_topic_cavity_pose_gt" default="/tree_cavity/vrpn_client/estimated_odometry" />
+
+<group ns="$(arg mav_name)">
+<group ns="rci">
+
+	<group unless="$(arg is_simulated)">
+		<rosparam command="load" file="$(find rci_launch)/resource/rci.yaml"/>
+	</group>
+	<group if="$(arg is_simulated)">
+		<rosparam command="load" file="$(find rci_launch)/resource/rci_sim.yaml"/>
+	</group>
+	<rosparam param="is_simulated" subst_value="True">$(arg is_simulated)</rosparam>
+
+	<node pkg="rci_gui" type="rci_gui" name="rci_gui" output="screen" >
+		<remap from="gui/input/points" to="filter_pipeline/output/points" />
+
+		<remap from="gui/input/image/depth" to="img_tree_detection/output/image" />
+		<remap from="gui/lost_tree" to="img_tree_detection/lost_tree" />
+		<remap from="gui/input/tree" to="img_tree_detection/output/tree" />
+		<remap from="gui/init_seed_point" to="img_tree_detection/init_seed_point" />
+
+		<remap from="gui/input/cavity_box" to="cavity_normal/output/cavity_box" />
+
+		<remap from="gui/input/cavity_pose" to="kalman/output/cavity_pose" />
+		<remap from="gui/reset_kalman" to="kalman/reset_kalman" />
+
+		<remap from="gui/start_controller" to="controller/start_controller" />
+		<remap from="gui/lift_arm" to="controller/lift_arm" />
+
+		<remap from="gui/get_filter_pipeline_params" to="filter_pipeline/get_params" />
+		<remap from="gui/set_filter_pipeline_params" to="filter_pipeline/set_params" />
+		<remap from="gui/get_tree_detection_params" to="img_tree_detection/get_params" />
+		<remap from="gui/set_tree_detection_params" to="img_tree_detection/set_params" />	
+		<remap from="gui/get_box_check_params" to="box_check/get_params" />
+		<remap from="gui/set_box_check_params" to="box_check/set_params" />
+		<remap from="gui/get_cavity_normal_params" to="cavity_normal/get_params" />
+		<remap from="gui/set_cavity_normal_params" to="cavity_normal/set_params" />
+		<remap from="gui/get_kalman_params" to="kalman/get_params" />
+		<remap from="gui/set_kalman_params" to="kalman/set_params" />
+		<remap from="gui/get_controller_params" to="controller/get_params" />
+		<remap from="gui/set_controller_params" to="controller/set_params" />
+
+    <remap from="gui/input/robot_pose" to="/$(arg mav_name)/$(arg sim_topic_robot_odometry)" if="$(arg is_simulated)"/>
+		<remap from="gui/input/robot_pose" to="/$(arg mav_name)/$(arg real_topic_robot_odometry)" unless="$(arg is_simulated)"/>
+    <remap from="gui/input/desired_robot_pose" to="controller/output/robot_goal_debug_pose" />
+    <remap from="gui/input/gt_robot_pose" to="/$(arg mav_name)/$(arg sim_topic_robot_odometry_gt)" if="$(arg is_simulated)"/>
+		<remap from="gui/input/gt_robot_pose" to="/$(arg mav_name)/$(arg real_topic_robot_odometry_gt)" unless="$(arg is_simulated)"/>
+
+    <remap from="gui/input/endeffector_pose/linkstates" to="$(arg sim_topic_endeffector_pose)" if="$(arg is_simulated)"/>
+    <remap from="gui/input/endeffector_pose/odometry" to="$(arg real_topic_endeffector_pose)" unless="$(arg is_simulated)"/>
+    <remap from="gui/input/desired_endeffector_pose" to="controller/output/arm_goal_pose" />
+    <remap from="gui/input/gt_cavity_pose/linkstates" to="$(arg sim_topic_cavity_pose_gt)" if="$(arg is_simulated)"/>
+    <remap from="gui/input/gt_cavity_pose/odometry" to="$(arg real_topic_cavity_pose_gt)" unless="$(arg is_simulated)"/>
+	</node>
+
+</group>
+</group>
+
+</launch>

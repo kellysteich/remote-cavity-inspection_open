@@ -1,0 +1,9 @@
+<library path="lib/libtree_cavity_detection_kmeans_nodelet">
+    <class name="rci_img_tree_detection/tree_cavity_detection_kmeans_nodelet"
+           type="rci_img_tree_detection::TreeCavityDetectionKmeansNodelet"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            Nodelet for kmeans contour tree detection in the depth map (of picoflexx).
+        </description>
+    </class>
+</library>

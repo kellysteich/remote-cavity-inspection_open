@@ -1,0 +1,33 @@
+<package>
+  <name>rci_launch</name>
+  <version>1.0.0</version>
+  <description>The remote_cavity_inspection launch files package</description>
+
+  <maintainer email="steichk@ethz.ch">Kelly Steich</maintainer>
+
+  <license>ASL 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>roscpp</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>roscpp</run_depend>
+
+  <run_depend>rci_comm</run_depend>
+  <run_depend>rci_description</run_depend>
+
+  <run_depend>dm_to_dmc</run_depend>
+  <run_depend>rci_filter_pipeline</run_depend>
+  <run_depend>rci_img_tree_detection</run_depend>
+  <run_depend>rci_pc_cavity_check</run_depend>
+  <run_depend>rci_cavity_normal</run_depend>
+  <run_depend>rci_kalman</run_depend>
+  <run_depend>rci_controller</run_depend>
+  <run_depend>rci_inverse_kinematics</run_depend>
+
+  <run_depend>rci_gui</run_depend>
+  <run_depend>rci_simulator</run_depend>
+
+</package>

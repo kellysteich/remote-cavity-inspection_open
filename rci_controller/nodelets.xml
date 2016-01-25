@@ -1,0 +1,9 @@
+<library path="lib/libcontroller_nodelet">
+    <class name="rci_controller/controller_nodelet"
+           type="rci_controller::ControllerNodelet"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            Nodelet for control of robot and robot arm.
+        </description>
+    </class>
+</library>

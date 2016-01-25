@@ -1,0 +1,6 @@
+# filter pipeline parameters
+passthrough: {min: 0.25, max: 2.5, used: true}
+voxelgrid: {leafsize: 0.004, used: true}
+radial: {min_neighbors: 4, radius_search: 0.007, used: false}
+
+

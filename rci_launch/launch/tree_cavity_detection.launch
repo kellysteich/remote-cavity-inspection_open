@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<arg name="mav_name" default="firefly"/>
+<arg name="is_simulated" default="false" />
+<arg name="use_sensor" default="true" />
+
+<arg name="topic_robot_pose_command" default="command/pose" />
+
+<!--Simulation-->
+<arg name="sim_topic_robot_odometry" default="ground_truth/odometry" />
+<arg name="sim_topic_joint_state_pitching" default="delta_manipulator/motor_pitching_joint_state" />
+<arg name="sim_topic_joint_state_left" default="delta_manipulator/motor_left_joint_state" />
+<arg name="sim_topic_joint_state_right" default="delta_manipulator/motor_right_joint_state" />
+<arg name="sim_topic_arm_command_pitching" default="delta_manipulator/command/motor_pitching_position" />
+<arg name="sim_topic_arm_command_right" default="delta_manipulator/command/motor_right_position" />
+<arg name="sim_topic_arm_command_left" default="delta_manipulator/command/motor_left_position" />
+<arg name="sim_topic_sensor_points" default="picoflexx/camera_depth/depth/points" />
+<arg name="sim_topic_sensor_disparity" default="picoflexx/camera_depth/depth/disparity" />
+<arg name="sim_topic_sensor_camera_info" default="picoflexx/camera_depth/depth/camera_info" />
+
+<!--Real-->
+<arg name="real_topic_robot_odometry" default="msf_core/odometry" />
+<arg name="real_topic_joint_state_pitching" default="joint_0_state" />
+<arg name="real_topic_joint_state_left" default="joint_2_state" />
+<arg name="real_topic_joint_state_right" default="joint_1_state" />
+<arg name="real_topic_arm_command" default="joints_trajectory" />
+<arg name="real_topic_sensor_points" default="cam0/pcl" />
+<arg name="real_topic_sensor_disparity" default="cam0/depth/image_raw" />
+<arg name="real_topic_sensor_camera_info" default="cam0/depth/camera_info" />
+
+<group ns="$(arg mav_name)">
+<group ns="rci">
+
+	<group unless="$(arg is_simulated)">
+		<rosparam command="load" file="$(find rci_launch)/resource/rci.yaml"/>
+	</group>
+	<group if="$(arg is_simulated)">
+		<rosparam command="load" file="$(find rci_launch)/resource/rci_sim.yaml"/>
+	</group>
+	<rosparam param="is_simulated" subst_value="True">$(arg is_simulated)</rosparam>
+
+	<group unless="$(arg is_simulated)">
+	<group if="$(arg use_sensor)">
+		<node name="picoflexx_cam" pkg="ros_picoflexx" type="ros_picoflexx_node" output="screen" respawn="true" clear_params="true">
+       <rosparam command="load" file="$(find rci_launch)/resource/picoflexx_config.yaml" />
+    </node>
+  </group>
+	</group>
+
+	<!-- Nodelet manager for this pipeline -->
+	<node pkg="nodelet" type="nodelet" name="nodelet_manager"  args="manager" output="screen"/>
+
+	<group if="$(arg is_simulated)"> 
+ 		<node pkg="nodelet" type="nodelet" name="dm32_to_dm" output="screen" 
+          args="load dm_to_dmc/dm32_to_dm_nodelet nodelet_manager"> 
+    	<remap from="dm32_to_dm/input" to="/$(arg mav_name)/$(arg sim_topic_sensor_disparity)"/>
+ 		</node>
+	</group>
+
+
+		<node pkg="nodelet" type="nodelet" name="filter_pipeline" output="screen" 
+          args="load rci_filter_pipeline/filter_pipeline_nodelet nodelet_manager"> 
+			<remap from="filter_pipeline/input/points" to="$(arg real_topic_sensor_points)" unless="$(arg is_simulated)"/>
+			<remap from="filter_pipeline/input/points" to="/$(arg mav_name)/$(arg sim_topic_sensor_points)" if="$(arg is_simulated)"/>
+ 		</node>
+
+
+		<node pkg="nodelet" type="nodelet" name="tree_cavity_detection_kmeans" output="screen"
+          args="load rci_img_tree_detection/tree_cavity_detection_kmeans_nodelet nodelet_manager">
+			<remap from="img_tree_detection/input/image" to="$(arg real_topic_sensor_disparity)" unless="$(arg is_simulated)"/>
+			<remap from="img_tree_detection/input/image" to="dm32_to_dm/output" if="$(arg is_simulated)"/>
+			<remap from="img_tree_detection/input/cam_info" to="$(arg real_topic_sensor_camera_info)" unless="$(arg is_simulated)"/>
+			<remap from="img_tree_detection/input/cam_info" to="/$(arg mav_name)/$(arg sim_topic_sensor_camera_info)" if="$(arg is_simulated)"/>
+		</node>
+
+
+		<node pkg="nodelet" type="nodelet" name="box_check" output="screen"
+          args="load rci_pc_cavity_check/box_check_nodelet nodelet_manager">
+			<remap from="box_check/input/points" to="filter_pipeline/output/points" />
+			<remap from="box_check/input/cavity" to="img_tree_detection/output/cavity" />
+ 		</node>
+
+
+		<node pkg="nodelet" type="nodelet" name="cavity_normal" output="screen"
+          args="load rci_cavity_normal/cavity_normal_nodelet nodelet_manager">
+			<remap from="cavity_normal/input/points" to="filter_pipeline/output/points" />
+			<remap from="cavity_normal/input/cavity" to="box_check/output/cavity_box" />
+ 		</node>
+
+
+		<node pkg="nodelet" type="nodelet" name="kalman" output="screen"
+          args="load rci_kalman/kalman_nodelet nodelet_manager">
+			<remap from="kalman/input/robot_pose" to="/$(arg mav_name)/$(arg sim_topic_robot_odometry)" if="$(arg is_simulated)"/>
+			<remap from="kalman/input/robot_pose" to="/$(arg mav_name)/$(arg real_topic_robot_odometry)" unless="$(arg is_simulated)"/>
+      <remap from="kalman/input/cavity_pose" to="cavity_normal/output/cavity_pose" />
+ 		</node>
+
+
+		<node pkg="nodelet" type="nodelet" name="controller" output="screen"
+          args="load rci_controller/controller_nodelet nodelet_manager">
+			<remap from="controller/input/robot_pose" to="/$(arg mav_name)/$(arg sim_topic_robot_odometry)" if="$(arg is_simulated)"/>
+			<remap from="controller/input/robot_pose" to="/$(arg mav_name)/$(arg real_topic_robot_odometry)" unless="$(arg is_simulated)"/>
+      <remap from="controller/input/cavity_pose" to="kalman/output/cavity_pose" />
+			<remap from="controller/input/jointstate/pitching" to="/$(arg mav_name)/$(arg real_topic_joint_state_pitching)" unless="$(arg is_simulated)"/>
+			<remap from="controller/input/jointstate/right" to="/$(arg mav_name)/$(arg real_topic_joint_state_right)" unless="$(arg is_simulated)"/>
+			<remap from="controller/input/jointstate/left" to="/$(arg mav_name)/$(arg real_topic_joint_state_left)" unless="$(arg is_simulated)"/>
+			<remap from="controller/input/jointstate/pitching" to="/$(arg mav_name)/$(arg sim_topic_joint_state_pitching)" if="$(arg is_simulated)"/>
+			<remap from="controller/input/jointstate/right" to="/$(arg mav_name)/$(arg sim_topic_joint_state_right)" if="$(arg is_simulated)"/>
+			<remap from="controller/input/jointstate/left" to="/$(arg mav_name)/$(arg sim_topic_joint_state_left)" if="$(arg is_simulated)"/>
+
+      <remap from="controller/output/robot_goal_pose" to="/$(arg mav_name)/$(arg topic_robot_pose_command)" />
+			<remap from="controller/output/angle_pitching" to="/$(arg mav_name)/$(arg sim_topic_arm_command_pitching)" if="$(arg is_simulated)"/>
+ 			<remap from="controller/output/angle_left" to="/$(arg mav_name)/$(arg sim_topic_arm_command_left)" if="$(arg is_simulated)"/>
+ 			<remap from="controller/output/angle_right" to="/$(arg mav_name)/$(arg sim_topic_arm_command_right)" if="$(arg is_simulated)"/>
+
+			<remap from="controller/output/joint_trajectory" to="/$(arg mav_name)/$(arg real_topic_arm_command)" unless="$(arg is_simulated)"/>
+ 		</node>
+
+
+		<node pkg="nodelet" type="nodelet" name="inverse_kinematics" output="screen"
+          args="load rci_inverse_kinematics/inverse_kinematics_nodelet nodelet_manager">
+			<remap from="inverse_kinematics/input/cavity_pose" to="controller/output/arm_goal_pose" />
+			<remap from="inverse_kinematics/output/arm_goal_angle_left" to="/$(arg mav_name)/$(arg sim_topic_arm_command_left)" if="$(arg is_simulated)"/>
+			<remap from="inverse_kinematics/output/arm_goal_angle_right" to="/$(arg mav_name)/$(arg sim_topic_arm_command_right)" if="$(arg is_simulated)"/>
+
+			<remap from="inverse_kinematics/output/joint_trajectory" to="/$(arg mav_name)/$(arg real_topic_arm_command)" unless="$(arg is_simulated)"/>
+ 		</node>
+
+</group>
+</group>
+
+</launch>

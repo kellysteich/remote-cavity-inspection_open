@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package>
+  <name>dm_to_dmc</name>
+  <version>0.0.0</version>
+  <description>The dm_to_dmc package</description>
+
+  <maintainer email="steichk@ethz.ch">Kelly Steich</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>nodelet</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>image_transport</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>nodelet</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+
+  <run_depend>cv_bridge</run_depend>
+  <run_depend>image_transport</run_depend>
+
+  <build_depend>opencv2</build_depend>
+  <run_depend>opencv2</run_depend>
+
+  <export>
+    <nodelet plugin="${prefix}/nodelets.xml"/>
+  </export>
+</package>

@@ -1,0 +1,9 @@
+<library path="lib/libbox_check_nodelet">
+    <class name="rci_pc_cavity_check/box_check_nodelet"
+           type="rci_pc_cavity_check::BoxCheckNodelet"
+           base_class_type="nodelet::Nodelet">
+        <description>
+            Nodelet for checking the largest fitting box in the detected cavity.
+        </description>
+    </class>
+</library>

@@ -1,0 +1,10 @@
+float64 octree_resolution
+float64 start_box_width
+float64 start_box_height
+float64 start_box_length
+float64 initial_step
+int64 max_n_inliers
+
+---
+
+bool result

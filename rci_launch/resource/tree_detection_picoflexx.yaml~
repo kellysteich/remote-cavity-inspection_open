@@ -1,0 +1,6 @@
+# tree detection parameters
+debug: true
+sensor: {depth_max: 3, depth_scale: 0.0002}
+tree: {thresh_seed: 0.05, thresh_depth: 0.15, max_scaling: 1.7}
+cavity: {min_width: 0.035, min_height: 0.055}
+kmeans: {k: 10, tol: 0.001, max_trys: 50}

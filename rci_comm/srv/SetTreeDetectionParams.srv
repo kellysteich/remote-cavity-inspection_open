@@ -1,0 +1,15 @@
+float64 min_depth
+float64 thresh_seed
+float64 thresh_depth
+float64 max_scaling
+
+float64 min_cavity_width
+float64 min_cavity_height
+
+int64 k
+float64 tol
+int64 max_trys
+
+---
+
+bool result
