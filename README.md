@@ -2,6 +2,9 @@
 
 This repository contains the code from my master thesis at ETHZ. The project is about remote cavity inspection (rci) using a drone with a robot arm with an attached stereo camera. In collaboration with ASL, DRZ and WSL.
 
+Link to presentation and videos about this project: 
+https://www.dropbox.com/sh/zdyprb4u7gi2khf/AABW8YYrp8Y6-vk1hoivLZsja?dl=0
+
 ### Dependencies ###
 * ROS
 * Qt
